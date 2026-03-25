@@ -13,28 +13,38 @@ function isModalOpen() {
 }
 
 function saveData() {
-    // ✨ FIX: เช็คก่อนว่ามีปุ่มไหม ถ้าไม่มีใช้ค่า 'normal'
     const ruleEl = document.getElementById('game-rule');
     const ruleValue = ruleEl ? ruleEl.value : 'normal';
 
+    // 1. แพ็คกระเป๋าเตรียมข้อมูล
     const data = {
-        players,
+        players: players,
         courts: courts.map(c => ({...c, interval: null})),
-        courtCount,
-        pairingHistory,
-        opponentHistory,
-        matchLogs,
-        bookingCounter,
+        courtCount: courtCount,
+        pairingHistory: pairingHistory,
+        opponentHistory: opponentHistory,
+        matchLogs: matchLogs,
+        bookingCounter: bookingCounter,
         gameRule: ruleValue, 
         rankedMode: isRankedMode,
         mmrMode: isMMRMode,
-        completedGameTimes
+        completedGameTimes: completedGameTimes,
+        lastUpdated: new Date().toISOString() // แปะป้ายเวลาซะหน่อย
     };
+
+    // 2. เซฟลง LocalStorage เผื่อเน็ตหลุด (กันเหนียว)
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
-    // 👇 เพิ่มการ Sync ไป Google Sheets (รันแบบ Background ไม่กระทบจังหวะกด)
-    if (typeof google !== 'undefined' && google.script) {
-        google.script.run.syncPlayersToDB(JSON.stringify(players));
+    // 3. 🚀 ยิงขึ้น Firebase Cloud (พระเอกของเราอยู่ตรงนี้)
+    if (typeof db !== 'undefined') {
+        // สร้าง Collection ชื่อ 'rooms' และ Document ชื่อ 'main-court' (เผื่ออนาคตมึงทำหลายห้อง)
+        db.collection('rooms').doc('main-court').set(data)
+          .then(() => {
+              console.log("☁️ Data Synced to Firebase สำเร็จเว้ย!");
+          })
+          .catch((error) => {
+              console.error("❌ Error writing to Firebase: ", error);
+          });
     }
 }
 
