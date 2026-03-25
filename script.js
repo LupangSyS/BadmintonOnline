@@ -1299,33 +1299,6 @@ function getWaitTimeForQueue(queueIndex) {
     }
 }
 
-// 📡 LIVE SYNC
-const isViewer = (typeof APP_MODE !== 'undefined' && APP_MODE === 'viewer');
-let syncInterval = null;
-
-if (isViewer) {
-    console.log("👀 VIEW MODE ACTIVATED");
-    document.body.classList.add('view-mode');
-    google.script.run.withSuccessHandler(restoreState).syncLoadState();
-    setInterval(() => { google.script.run.withSuccessHandler(restoreState).syncLoadState(); }, 15000);
-}
-
-function toggleBroadcast() {
-    const btn = document.getElementById('btn-broadcast');
-    if (syncInterval) {
-        clearInterval(syncInterval); syncInterval = null; btn.innerHTML = '📡 เริ่ม Live'; btn.classList.remove('pulse'); alert('📴 จบการ Live แล้ว');
-    } else {
-        if(!confirm('เริ่ม "ถ่ายทอดสด" ไหม?')) return;
-        syncInterval = setInterval(pushDataToCloud, 10000); pushDataToCloud();
-        btn.innerHTML = '🔴 On Air'; btn.classList.add('pulse'); showShareLinkModal();
-    }
-}
-
-function pushDataToCloud() {
-    const state = { players: players, courts: courts, courtCount: courtCount, gameRule: 'normal', timestamp: Date.now() };
-    google.script.run.syncSaveState(JSON.stringify(state));
-    console.log("Cloud Synced ☁️");
-}
 
 function restoreState(json) {
     if (isModalOpen() || !json) return;
