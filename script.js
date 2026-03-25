@@ -1,3 +1,28 @@
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+
+<script>
+// 👇 เชื่อมต่อ Firebase Database ของมึง (ไม่ต้องไปยุ่งกับ GAS แล้ว)
+const firebaseConfig = {
+  apiKey: "AIzaSyCnrkEbVOM3i7f59rAnWN9mgPC9iekEuIA",
+  authDomain: "badminton-manager-e77bb.firebaseapp.com",
+  projectId: "badminton-manager-e77bb",
+  storageBucket: "badminton-manager-e77bb.firebasestorage.app",
+  messagingSenderId: "402072472322",
+  appId: "1:402072472322:web:a212ed6eaff7ec10fbd01b",
+  measurementId: "G-2EFE485QTK"
+};
+
+// เริ่มเดินเครื่อง Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+console.log("🔥 Firebase พร้อมใช้งานแล้วเว้ยแปง!");
+
+// ==========================================
+// 🏸 โค้ดระบบแบดของมึง เริ่มต่อจากตรงนี้ไป...
+// ==========================================
+
+// ... (โค้ดเก่าของมึง พวก let players = []; อะไรพวกนั้น ปล่อยไว้ที่เดิมเป๊ะๆ) ...
 
 // ==========================================
 // 🏸 BADMINTON MANAGER PRO - SCRIPT (V.Final Stable)
