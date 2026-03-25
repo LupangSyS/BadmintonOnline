@@ -1,40 +1,52 @@
+// ==========================================
+// 🏸 BADMINTON MANAGER PRO - SCRIPT
+// ==========================================
 
-// ==========================================
-// 🏸 BADMINTON MANAGER PRO - SCRIPT (V.Final Stable)
-// ==========================================
+// 👇 วาง Config ทิ้งไว้บนสุดเลย
+const firebaseConfig = {
+  apiKey: "AIzaSyCnrkEbVOM3i7f59rAnWN9mgPC9iekEuIA",
+  authDomain: "badminton-manager-e77bb.firebaseapp.com",
+  projectId: "badminton-manager-e77bb",
+  storageBucket: "badminton-manager-e77bb.firebasestorage.app",
+  messagingSenderId: "402072472322",
+  appId: "1:402072472322:web:a212ed6eaff7ec10fbd01b",
+  measurementId: "G-2EFE485QTK"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+console.log("🔥 Firebase พร้อมใช้งานแล้วเว้ยแปง!");
 
 // --- Persistence & State Management ---
 const STORAGE_KEY = 'BADMINTON_MANAGER_V7_DATA';
 
-function isModalOpen() {
-    const booking = document.getElementById('booking-modal');
-    const winner = document.getElementById('winner-modal');
-    return (booking && booking.style.display === 'flex') || (winner && winner.style.display === 'flex');
-}
-
+// 👇 เอาฟังก์ชัน saveData ใหม่ไปทับของเดิมด้วย!
 function saveData() {
-    // ✨ FIX: เช็คก่อนว่ามีปุ่มไหม ถ้าไม่มีใช้ค่า 'normal'
     const ruleEl = document.getElementById('game-rule');
     const ruleValue = ruleEl ? ruleEl.value : 'normal';
 
     const data = {
-        players,
+        players: players,
         courts: courts.map(c => ({...c, interval: null})),
-        courtCount,
-        pairingHistory,
-        opponentHistory,
-        matchLogs,
-        bookingCounter,
+        courtCount: courtCount,
+        pairingHistory: pairingHistory,
+        opponentHistory: opponentHistory,
+        matchLogs: matchLogs,
+        bookingCounter: bookingCounter,
         gameRule: ruleValue, 
         rankedMode: isRankedMode,
         mmrMode: isMMRMode,
-        completedGameTimes
+        completedGameTimes: completedGameTimes,
+        lastUpdated: new Date().toISOString()
     };
+
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
-    // 👇 เพิ่มการ Sync ไป Google Sheets (รันแบบ Background ไม่กระทบจังหวะกด)
-    if (typeof google !== 'undefined' && google.script) {
-        google.script.run.syncPlayersToDB(JSON.stringify(players));
+    // 🚀 ยิงขึ้น Firebase เลยตรงๆ
+    if (typeof db !== 'undefined') {
+        db.collection('rooms').doc('main-court').set(data)
+          .then(() => console.log("☁️ Data Synced to Firebase สำเร็จเว้ย!"))
+          .catch((error) => console.error("❌ Error writing to Firebase: ", error));
     }
 }
 
