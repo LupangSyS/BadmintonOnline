@@ -180,17 +180,6 @@ button.mini-btn { padding: 2px 6px; font-size: 0.75em; margin-left: auto; }
 .cost-total { font-size: 1.2em; font-weight: bold; color: #2c3e50; border-top: 2px solid #ccc; margin-top: 10px; padding-top: 10px;}
 .nav-bar { display:flex; justify-content: center; margin-top: auto; padding: 10px;}
 
-/* Animation ปุ่ม Live */
-.pulse {
-    background-color: #e74c3c !important;
-    color: white !important;
-    animation: pulse-animation 2s infinite;
-}
-@keyframes pulse-animation {
-    0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
-    70% { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
-}
 
 /* =========================================
    📺 VIEWER MODE
