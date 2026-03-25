@@ -1,28 +1,3 @@
-<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
-
-<script>
-// 👇 เชื่อมต่อ Firebase Database ของมึง (ไม่ต้องไปยุ่งกับ GAS แล้ว)
-const firebaseConfig = {
-  apiKey: "AIzaSyCnrkEbVOM3i7f59rAnWN9mgPC9iekEuIA",
-  authDomain: "badminton-manager-e77bb.firebaseapp.com",
-  projectId: "badminton-manager-e77bb",
-  storageBucket: "badminton-manager-e77bb.firebasestorage.app",
-  messagingSenderId: "402072472322",
-  appId: "1:402072472322:web:a212ed6eaff7ec10fbd01b",
-  measurementId: "G-2EFE485QTK"
-};
-
-// เริ่มเดินเครื่อง Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-console.log("🔥 Firebase พร้อมใช้งานแล้วเว้ยแปง!");
-
-// ==========================================
-// 🏸 โค้ดระบบแบดของมึง เริ่มต่อจากตรงนี้ไป...
-// ==========================================
-
-// ... (โค้ดเก่าของมึง พวก let players = []; อะไรพวกนั้น ปล่อยไว้ที่เดิมเป๊ะๆ) ...
 
 // ==========================================
 // 🏸 BADMINTON MANAGER PRO - SCRIPT (V.Final Stable)
@@ -38,38 +13,28 @@ function isModalOpen() {
 }
 
 function saveData() {
+    // ✨ FIX: เช็คก่อนว่ามีปุ่มไหม ถ้าไม่มีใช้ค่า 'normal'
     const ruleEl = document.getElementById('game-rule');
     const ruleValue = ruleEl ? ruleEl.value : 'normal';
 
-    // 1. แพ็คกระเป๋าเตรียมข้อมูล
     const data = {
-        players: players,
+        players,
         courts: courts.map(c => ({...c, interval: null})),
-        courtCount: courtCount,
-        pairingHistory: pairingHistory,
-        opponentHistory: opponentHistory,
-        matchLogs: matchLogs,
-        bookingCounter: bookingCounter,
+        courtCount,
+        pairingHistory,
+        opponentHistory,
+        matchLogs,
+        bookingCounter,
         gameRule: ruleValue, 
         rankedMode: isRankedMode,
         mmrMode: isMMRMode,
-        completedGameTimes: completedGameTimes,
-        lastUpdated: new Date().toISOString() // แปะป้ายเวลาซะหน่อย
+        completedGameTimes
     };
-
-    // 2. เซฟลง LocalStorage เผื่อเน็ตหลุด (กันเหนียว)
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
-    // 3. 🚀 ยิงขึ้น Firebase Cloud (พระเอกของเราอยู่ตรงนี้)
-    if (typeof db !== 'undefined') {
-        // สร้าง Collection ชื่อ 'rooms' และ Document ชื่อ 'main-court' (เผื่ออนาคตมึงทำหลายห้อง)
-        db.collection('rooms').doc('main-court').set(data)
-          .then(() => {
-              console.log("☁️ Data Synced to Firebase สำเร็จเว้ย!");
-          })
-          .catch((error) => {
-              console.error("❌ Error writing to Firebase: ", error);
-          });
+    // 👇 เพิ่มการ Sync ไป Google Sheets (รันแบบ Background ไม่กระทบจังหวะกด)
+    if (typeof google !== 'undefined' && google.script) {
+        google.script.run.syncPlayersToDB(JSON.stringify(players));
     }
 }
 
